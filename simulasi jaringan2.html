@@ -1,0 +1,2359 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetForge - Network Simulation Lab</title>
+
+<style>
+:root {
+  --bg: #020d20;
+  --panel: #031a35;
+  --blue: #147dff;
+  --cyan: #00d8ff;
+  --green: #00e4a5;
+  --purple: #9567ff;
+  --orange: #ff9d42;
+  --text: #e4f4ff;
+  --muted: #8cb9df;
+  --red: #ff557c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 55% -10%, #0b3c76 0, transparent 45%),
+    linear-gradient(120deg, #02091a, #03152e 65%, #04112a);
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: var(--text);
+  font-size: 12px;
+}
+
+button, input, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 235px minmax(0, 1fr);
+}
+
+/* SIDEBAR */
+
+.sidebar {
+  border-right: 1px solid #0a3c6a;
+  background: #02112aee;
+  padding: 15px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px 18px;
+}
+
+.brandmark {
+  font-size: 28px;
+  color: var(--cyan);
+  filter: drop-shadow(0 0 9px #00cfff);
+}
+
+.brand strong {
+  font-size: 17px;
+}
+
+.brand small {
+  display: block;
+  color: #8dbce5;
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+.navtitle {
+  color: #5890bf;
+  font-size: 10px;
+  letter-spacing: 1.3px;
+  font-weight: 800;
+  padding: 8px 8px 3px;
+}
+
+.nav {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 10px 9px;
+  background: transparent;
+  color: #a8cbed;
+  min-height: 43px;
+  width: 100%;
+}
+
+.nav .ico {
+  font-size: 17px;
+  width: 24px;
+  text-align: center;
+}
+
+.nav .navtxt {
+  flex: 1;
+}
+
+.nav b {
+  display: block;
+  font-size: 11px;
+  margin-bottom: 3px;
+}
+
+.nav small {
+  font-size: 10px;
+  color: #81a9cf;
+}
+
+.nav.active,
+.nav:hover {
+  background: linear-gradient(100deg, #073b75, #052448);
+  border-color: #1266ad;
+  color: white;
+  box-shadow: inset 3px 0 var(--cyan);
+}
+
+.sidecard {
+  margin-top: auto;
+  border: 1px solid #0b4d83;
+  background: #031a37;
+  border-radius: 12px;
+  padding: 13px;
+}
+
+.sidecard h3 {
+  margin: 0 0 12px;
+  font-size: 12px;
+}
+
+.ring {
+  height: 86px;
+  width: 86px;
+  border-radius: 50%;
+  border: 8px solid #0c4275;
+  border-right-color: var(--cyan);
+  border-top-color: var(--cyan);
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.ringrow {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.sidecard p {
+  color: #9cc4e7;
+  font-size: 10px;
+  line-height: 1.6;
+  margin-top: 15px;
+}
+
+/* MAIN HEADER */
+
+main {
+  min-width: 0;
+  padding: 14px 15px 18px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-bottom: 1px solid #0a3c69;
+  padding: 0 5px 13px;
+  margin-bottom: 13px;
+}
+
+.topnav {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}
+
+.topnav button {
+  border: 0;
+  background: none;
+  color: #aacdec;
+  padding: 8px 5px;
+}
+
+.topnav button.active {
+  color: white;
+  background: #07346b;
+  border-radius: 7px;
+}
+
+.topright {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.level {
+  border: 1px solid #0b5a94;
+  border-radius: 9px;
+  padding: 8px 10px;
+}
+
+.level b {
+  color: #ffd166;
+}
+
+.xpbar {
+  width: 125px;
+  height: 6px;
+  background: #0c2e59;
+  border-radius: 9px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.xpbar div {
+  height: 100%;
+  width: 42%;
+  background: linear-gradient(90deg, #2c6cff, #8c69ff);
+}
+
+.avatar {
+  width: 31px;
+  height: 31px;
+  border: 1px solid #1685e6;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #052b55;
+}
+
+/* LAB HEADER */
+
+.labhead {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) repeat(3, minmax(100px, 135px));
+  gap: 9px;
+  align-items: stretch;
+  margin-bottom: 12px;
+}
+
+.labname {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.labicon {
+  width: 58px;
+  height: 58px;
+  border: 1px solid #1382dd;
+  background: linear-gradient(135deg, #064a9b, #041e50);
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  color: var(--cyan);
+  font-size: 28px;
+  box-shadow: 0 0 25px #007eff25;
+}
+
+.eyebrow {
+  font-size: 9px;
+  color: var(--cyan);
+  letter-spacing: 1.2px;
+  font-weight: 800;
+}
+
+.labname h1 {
+  font-size: 18px;
+  margin: 5px 0;
+}
+
+.labname p {
+  margin: 0;
+  color: #9ec6e9;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.mini-stat {
+  border: 1px solid #0a4b80;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #052348, #03152e);
+  padding: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.mini-stat .msico {
+  font-size: 21px;
+  color: var(--cyan);
+}
+
+.mini-stat small {
+  display: block;
+  color: #83b1db;
+  font-size: 9px;
+  margin-bottom: 6px;
+}
+
+/* CONTENT CARDS */
+
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 350px;
+  gap: 12px;
+}
+
+.left,
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.card {
+  background: linear-gradient(145deg, #041d3b, #02142d);
+  border: 1px solid #0b4c82;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 9px 25px #0002;
+  min-width: 0;
+}
+
+.cardhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.cardhead h2 {
+  margin: 0;
+  font-size: 12px;
+}
+
+.tag {
+  font-size: 9px;
+  color: var(--cyan);
+  border: 1px solid #0a4b80;
+  background: #05254b;
+  border-radius: 6px;
+  padding: 5px 7px;
+}
+
+.tabs {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  background: #03162d;
+  border: 1px solid #0a4477;
+  color: #a9cbea;
+  padding: 7px 10px;
+  border-radius: 7px;
+  font-size: 10px;
+}
+
+.tab.active {
+  background: #0750a5;
+  color: white;
+  border-color: #1889ff;
+}
+
+/* NETWORK TOPOLOGY */
+
+.topo {
+  height: 345px;
+  border: 1px solid #0a477c;
+  border-radius: 9px;
+  overflow: hidden;
+  background-color: #03162e;
+  background-image:
+    linear-gradient(#0b3a602c 1px, transparent 1px),
+    linear-gradient(90deg, #0b3a602c 1px, transparent 1px);
+  background-size: 21px 21px;
+}
+
+.topo svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.topo .group {
+  fill: #022c3d;
+  fill-opacity: .75;
+  stroke: #00d7b3;
+  stroke-width: 1.2;
+}
+
+.topo .g2 {
+  fill: #0c1b43;
+  stroke: #6d62ff;
+}
+
+.topo .g3 {
+  fill: #2b1b17;
+  stroke: #ff9d42;
+}
+
+.link {
+  stroke: #00e5b3;
+  stroke-width: 2;
+  fill: none;
+  filter: drop-shadow(0 0 3px #00e5b3);
+}
+
+.link.purple {
+  stroke: #6d75ff;
+}
+
+.link.orange {
+  stroke: #ff9d42;
+}
+
+.device {
+  cursor: pointer;
+}
+
+.device rect {
+  fill: #062b53;
+  stroke: #00aaff;
+  stroke-width: 1.4;
+  rx: 6;
+}
+
+.device.router rect {
+  fill: #073e5d;
+  stroke: #00d8ff;
+}
+
+.device.server rect {
+  fill: #25165b;
+  stroke: #a178ff;
+}
+
+.device.selected rect {
+  stroke: white;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 7px #00d8ff);
+}
+
+.device text {
+  font-size: 10px;
+  fill: #e3f5ff;
+  text-anchor: middle;
+}
+
+.device .ip {
+  font-size: 9px;
+  fill: #9dd7ff;
+}
+
+.device .glyph {
+  font-size: 18px;
+  fill: var(--cyan);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 13px;
+  padding: 9px 2px 0;
+  color: #a7cbed;
+  font-size: 9px;
+}
+
+.legend i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.greenDot { background: var(--green); }
+.purpleDot { background: var(--purple); }
+.orangeDot { background: var(--orange); }
+
+/* DEVICE CONFIGURATION */
+
+.configtabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.configtab {
+  background: #032044;
+  color: #a9cbed;
+  border: 1px solid #0c4778;
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-size: 10px;
+}
+
+.configtab.active {
+  background: #0959c2;
+  color: white;
+  border-color: #248fff;
+}
+
+.configgrid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr 1fr;
+  gap: 9px;
+}
+
+.subpanel {
+  border: 1px solid #0b3c6b;
+  background: #031831;
+  border-radius: 8px;
+  padding: 9px;
+  min-width: 0;
+}
+
+.subpanel h3 {
+  margin: 0 0 8px;
+  font-size: 10px;
+  color: #c5e5ff;
+}
+
+.field {
+  margin-bottom: 7px;
+}
+
+.field label {
+  display: block;
+  color: #9bc5e8;
+  font-size: 9px;
+  margin-bottom: 4px;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #0b4a80;
+  border-radius: 5px;
+  background: #021025;
+  color: #e5f4ff;
+  padding: 7px;
+  font-size: 10px;
+}
+
+.vlanrow {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 5px;
+  margin: 4px 0;
+}
+
+.vlanrow input {
+  width: 100%;
+  padding: 6px;
+  background: #03152b;
+  border: 1px solid #0b4778;
+  color: #e5f4ff;
+  border-radius: 5px;
+  font-size: 10px;
+}
+
+.ifacerow {
+  display: grid;
+  grid-template-columns: 45px 1fr 54px;
+  gap: 4px;
+  align-items: center;
+  margin: 4px 0;
+  font-size: 9px;
+  color: #c4e2ff;
+}
+
+.ifacerow select {
+  width: 100%;
+  min-width: 0;
+  background: #03152b;
+  color: #dff3ff;
+  border: 1px solid #0b4778;
+  border-radius: 4px;
+  padding: 5px;
+  font-size: 9px;
+}
+
+/* BUTTONS */
+
+.btn {
+  border: 1px solid #0d68ad;
+  background: #073b78;
+  color: #eaf8ff;
+  border-radius: 7px;
+  padding: 8px 10px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.btn.primary {
+  background: linear-gradient(100deg, #0757e8, #1296ff);
+  border-color: #208bff;
+}
+
+.btn:hover {
+  filter: brightness(1.18);
+}
+
+.btn.full {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.btn.ghost {
+  background: #031831;
+  border-color: #0c4b7b;
+}
+
+.btn.warn {
+  background: #4b2b12;
+  border-color: #8c5421;
+  color: #ffcb8d;
+}
+
+/* TASKS AND LOGS */
+
+.lowergrid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 10px;
+}
+
+.activity {
+  max-height: 132px;
+  overflow: auto;
+}
+
+.event {
+  font-size: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid #0b3153;
+  color: #b9d7f4;
+  line-height: 1.5;
+}
+
+.event time {
+  color: #6d9bc5;
+  margin-right: 6px;
+}
+
+.event .good { color: var(--green); }
+.event .bad { color: var(--red); }
+
+.hintbox {
+  font-size: 10px;
+  line-height: 1.6;
+  color: #a9cbed;
+}
+
+.hintbox ol {
+  padding-left: 17px;
+  margin: 0 0 9px;
+}
+
+.missionsteps {
+  display: grid;
+  gap: 7px;
+}
+
+.task {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  border: 1px solid #0a4478;
+  background: #031a35;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.task .num {
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
+  border-radius: 50%;
+  background: #064b83;
+  display: grid;
+  place-items: center;
+  color: #dff7ff;
+  font-weight: 800;
+}
+
+.task.done .num {
+  background: #00785c;
+  color: white;
+}
+
+.task.active {
+  border-color: #168fff;
+  background: #05254a;
+}
+
+.task b {
+  display: block;
+  font-size: 10px;
+  margin: 1px 0 4px;
+}
+
+.task small {
+  display: block;
+  font-size: 9px;
+  color: #9bc3e7;
+  line-height: 1.5;
+}
+
+/* TERMINAL */
+
+.terminal {
+  height: 210px;
+  overflow: auto;
+  background: #010b1b;
+  border: 1px solid #0a477c;
+  border-radius: 8px;
+  padding: 10px;
+  font: 10px/1.7 Consolas, monospace;
+  color: #b5f8d9;
+}
+
+.terminal .ok { color: var(--green); }
+.terminal .err { color: #ff6380; }
+.terminal .info { color: var(--cyan); }
+.terminal .warn { color: #ffd166; }
+.terminal .muted { color: #6687a9; }
+
+.consoleSelect {
+  background: #03152b;
+  color: #a8d8ff;
+  border: 1px solid #0b4c83;
+  border-radius: 6px;
+  padding: 5px;
+  font-size: 9px;
+}
+
+.cmdrow {
+  display: flex;
+  gap: 5px;
+  margin-top: 7px;
+}
+
+.cmdrow input {
+  flex: 1;
+  min-width: 0;
+  background: #021025;
+  border: 1px solid #0b4c83;
+  border-radius: 6px;
+  padding: 8px;
+  color: #dff7ff;
+  font: 10px Consolas, monospace;
+}
+
+/* MISSION SUMMARY */
+
+.summarylist {
+  display: grid;
+  gap: 7px;
+}
+
+.summaryitem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  color: #bdd9f4;
+}
+
+.summaryitem .check {
+  color: var(--green);
+  font-size: 13px;
+  width: 14px;
+}
+
+.summaryitem .empty {
+  color: #6e8fb3;
+}
+
+.reward {
+  border-top: 1px solid #0a3d6a;
+  margin-top: 10px;
+  padding-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.gem {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #6653d8;
+  border-radius: 9px;
+  background: #211b53;
+  color: #c3a7ff;
+  font-size: 20px;
+}
+
+.reward strong {
+  display: block;
+  font-size: 11px;
+}
+
+.reward small {
+  font-size: 9px;
+  color: #9cc3e9;
+}
+
+.reward .btn {
+  margin-left: auto;
+}
+
+.toast {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  max-width: 330px;
+  background: #052b4e;
+  border: 1px solid #168cff;
+  border-radius: 10px;
+  padding: 12px 15px;
+  box-shadow: 0 10px 30px #0008;
+  display: none;
+  z-index: 5;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1300px) {
+  .columns {
+    grid-template-columns: minmax(0, 1fr) 315px;
+  }
+
+  .labhead {
+    grid-template-columns: minmax(200px, 1fr) repeat(3, minmax(90px, 115px));
+  }
+
+  .configgrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .subpanel:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 1050px) {
+  .app {
+    grid-template-columns: 195px minmax(0, 1fr);
+  }
+
+  .columns {
+    grid-template-columns: 1fr;
+  }
+
+  .right {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .right .card:nth-child(2) {
+    grid-column: 1 / -1;
+  }
+
+  .labhead {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .labname {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    border-right: 0;
+    border-bottom: 1px solid #0a3c6a;
+    padding: 10px;
+  }
+
+  .sidebar .navtitle,
+  .sidecard {
+    display: none;
+  }
+
+  #labnav {
+    display: flex;
+    overflow-x: auto;
+    gap: 5px;
+  }
+
+  .nav {
+    min-width: 170px;
+  }
+
+  .topnav {
+    gap: 7px;
+    flex-wrap: wrap;
+  }
+
+  .topright {
+    gap: 6px;
+  }
+
+  .xpbar {
+    width: 70px;
+  }
+
+  .right {
+    display: flex;
+  }
+
+  .labhead {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .labname {
+    grid-column: 1 / -1;
+  }
+
+  .topo {
+    height: 310px;
+  }
+
+  .configgrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .subpanel:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .lowergrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 430px) {
+  main {
+    padding: 10px;
+  }
+
+  .labhead,
+  .configgrid {
+    grid-template-columns: 1fr;
+  }
+
+  .labname {
+    grid-column: auto;
+  }
+
+  .subpanel:last-child {
+    grid-column: auto;
+  }
+
+  .topo {
+    height: 270px;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brandmark">⌘</div>
+      <div>
+        <strong>NETFORGE</strong>
+        <small>NETWORK SIMULATION LAB</small>
+      </div>
+    </div>
+
+    <div class="navtitle">WORKSPACE</div>
+
+    <div id="labnav">
+      <button class="nav active" data-lab="0">
+        <span class="ico">⌘</span>
+        <span class="navtxt"><b>Network Lab</b><small>VLAN & Switching</small></span>
+      </button>
+      <button class="nav" data-lab="1">
+        <span class="ico">⇄</span>
+        <span class="navtxt"><b>Routing Lab</b><small>Inter-VLAN Routing</small></span>
+      </button>
+      <button class="nav" data-lab="2">
+        <span class="ico">⌕</span>
+        <span class="navtxt"><b>Troubleshooting</b><small>Network Diagnostics</small></span>
+      </button>
+    </div>
+
+    <div class="navtitle">TOOLS</div>
+    <button class="nav" id="resetBtn">
+      <span class="ico">↻</span>
+      <span class="navtxt"><b>Reset Lab</b><small>Ulangi simulasi</small></span>
+    </button>
+
+    <button class="nav" id="helpBtn">
+      <span class="ico">?</span>
+      <span class="navtxt"><b>Command Help</b><small>Daftar perintah</small></span>
+    </button>
+
+    <div class="sidecard">
+      <h3>MISSION PROGRESS</h3>
+      <div class="ringrow">
+        <div class="ring" id="ring">0%</div>
+        <div>
+          <div style="font-size:11px;margin-bottom:7px">Lab completion</div>
+          <div style="color:#00e4a5;font-size:10px" id="missionCount">0 / 5 tugas</div>
+          <div style="color:#80a9ce;font-size:10px;margin-top:5px">Selesaikan semua misi</div>
+        </div>
+      </div>
+      <p>Konfigurasikan jaringan dengan benar, uji koneksi, dan temukan kesalahan tersembunyi.</p>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <header class="topbar">
+      <div class="topnav">
+        <button class="active">Dashboard</button>
+        <button id="topologyBtn">Topology</button>
+        <button id="terminalBtn">Terminal</button>
+      </div>
+
+      <div class="topright">
+        <div class="level">
+          <div>LEVEL <b id="level">01</b></div>
+          <div class="xpbar"><div id="xpfill"></div></div>
+        </div>
+        <div class="avatar">👨‍💻</div>
+      </div>
+    </header>
+
+    <section class="labhead">
+      <div class="labname">
+        <div class="labicon">⌘</div>
+        <div>
+          <div class="eyebrow">NETWORK ENGINEERING / PRACTICE MODE</div>
+          <h1 id="labTitle">VLAN Segmentation Challenge</h1>
+          <p id="labDescription">Bangun jaringan tersegmentasi dan pastikan komunikasi antardivisi sesuai kebijakan.</p>
+        </div>
+      </div>
+
+      <div class="mini-stat">
+        <div class="msico">◉</div>
+        <div><small>DEVICES</small><strong>6 Nodes</strong></div>
+      </div>
+      <div class="mini-stat">
+        <div class="msico">⇄</div>
+        <div><small>CONNECTIONS</small><strong>7 Links</strong></div>
+      </div>
+      <div class="mini-stat">
+        <div class="msico">⚡</div>
+        <div><small>DIFFICULTY</small><strong id="difficulty">HARD</strong></div>
+      </div>
+    </section>
+
+    <div class="columns">
+
+      <!-- KOLOM KIRI -->
+      <section class="left">
+
+        <!-- TOPOLOGY -->
+        <div class="card" id="topologyCard">
+          <div class="cardhead">
+            <h2>◈ Network Topology</h2>
+            <div class="tabs">
+              <button class="tab active" data-view="network">Network</button>
+              <button class="tab" data-view="ip">IP Table</button>
+              <button class="tab" data-view="routes">Routing</button>
+            </div>
+          </div>
+
+          <div class="topo">
+            <svg id="topologySvg" viewBox="0 0 720 345" role="img" aria-label="Diagram topologi jaringan">
+
+              <defs>
+                <pattern id="grid" width="22" height="22" patternUnits="userSpaceOnUse">
+                  <path d="M 22 0 L 0 0 0 22" fill="none" stroke="#174064" stroke-width=".5"/>
+                </pattern>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="3" result="blur"/>
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
+
+              <rect width="720" height="345" fill="url(#grid)"/>
+
+              <!-- ZONA JARINGAN -->
+              <rect class="group" x="15" y="22" width="205" height="300" rx="12"/>
+              <text x="28" y="42" fill="#00e4b3" font-size="10">VLAN 10 • ADMIN</text>
+
+              <rect class="group g2" x="247" y="22" width="205" height="300" rx="12"/>
+              <text x="260" y="42" fill="#a99aff" font-size="10">VLAN 20 • FINANCE</text>
+
+              <rect class="group g3" x="485" y="22" width="220" height="300" rx="12"/>
+              <text x="498" y="42" fill="#ffb86c" font-size="10">SERVER / CORE</text>
+
+              <!-- LINK -->
+              <g id="networkLinks">
+                <path class="link" d="M105 108 L177 174"/>
+                <path class="link" d="M105 252 L177 174"/>
+                <path class="link purple" d="M338 108 L338 174"/>
+                <path class="link purple" d="M338 252 L338 174"/>
+                <path class="link orange" d="M177 174 L338 174"/>
+                <path class="link orange" d="M338 174 L554 174"/>
+                <path class="link orange" d="M554 174 L622 108"/>
+                <path class="link orange" d="M554 174 L622 252"/>
+              </g>
+
+              <!-- PERANGKAT -->
+              <g class="device selected" data-device="PC1" transform="translate(65 75)">
+                <rect width="80" height="60"/>
+                <text class="glyph" x="40" y="23">▣</text>
+                <text x="40" y="39">PC-ADMIN</text>
+                <text class="ip" x="40" y="51">192.168.10.10</text>
+              </g>
+
+              <g class="device" data-device="PC2" transform="translate(65 222)">
+                <rect width="80" height="60"/>
+                <text class="glyph" x="40" y="23">▣</text>
+                <text x="40" y="39">PC-ADMIN2</text>
+                <text class="ip" x="40" y="51">192.168.10.11</text>
+              </g>
+
+              <g class="device" data-device="SW1" transform="translate(137 145)">
+                <rect width="80" height="60"/>
+                <text class="glyph" x="40" y="24">▤</text>
+                <text x="40" y="40">SW-CORE</text>
+                <text class="ip" x="40" y="51">L2 SWITCH</text>
+              </g>
+
+              <g class="device" data-device="PC3" transform="translate(298 75)">
+                <rect width="80" height="60"/>
+                <text class="glyph" x="40" y="23">▣</text>
+                <text x="40" y="39">PC-FINANCE</text>
+                <text class="ip" x="40" y="51">192.168.20.10</text>
+              </g>
+
+              <g class="device" data-device="PC4" transform="translate(298 222)">
+                <rect width="80" height="60"/>
+                <text class="glyph" x="40" y="23">▣</text>
+                <text x="40" y="39">PC-FINANCE2</text>
+                <text class="ip" x="40" y="51">192.168.20.11</text>
+              </g>
+
+              <g class="device router" data-device="R1" transform="translate(514 145)">
+                <rect width="80" height="60"/>
+                <text class="glyph" x="40" y="24">◎</text>
+                <text x="40" y="40">R-EDGE</text>
+                <text class="ip" x="40" y="51">ROUTER</text>
+              </g>
+
+              <g class="device server" data-device="SRV1" transform="translate(582 75)">
+                <rect width="80" height="60"/>
+                <text class="glyph" x="40" y="23">▤</text>
+                <text x="40" y="39">DHCP-SRV</text>
+                <text class="ip" x="40" y="51">192.168.30.10</text>
+              </g>
+
+              <g class="device server" data-device="SRV2" transform="translate(582 222)">
+                <rect width="80" height="60"/>
+                <text class="glyph" x="40" y="23">▤</text>
+                <text x="40" y="39">DNS-SRV</text>
+                <text class="ip" x="40" y="51">192.168.30.20</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="legend">
+            <span><i class="greenDot"></i>VLAN 10</span>
+            <span><i class="purpleDot"></i>VLAN 20</span>
+            <span><i class="orangeDot"></i>Core / Routing</span>
+            <span>▣ Klik perangkat untuk memilih</span>
+          </div>
+        </div>
+
+        <!-- CONFIGURATION -->
+        <div class="card" id="configCard">
+          <div class="cardhead">
+            <h2>⚙ Device Configuration</h2>
+            <span class="tag" id="selectedDevice">PC1 SELECTED</span>
+          </div>
+
+          <div class="configtabs">
+            <button class="configtab active" data-config="ip">IP Settings</button>
+            <button class="configtab" data-config="vlan">VLAN / Ports</button>
+            <button class="configtab" data-config="routing">Routing</button>
+          </div>
+
+          <div id="configContent">
+            <div class="configgrid">
+              <div class="subpanel">
+                <h3>DEVICE INFO</h3>
+                <div class="field">
+                  <label>Device name</label>
+                  <input id="deviceName" value="PC-ADMIN">
+                </div>
+                <div class="field">
+                  <label>Device type</label>
+                  <select id="deviceType">
+                    <option>PC</option>
+                    <option>Switch</option>
+                    <option>Router</option>
+                    <option>Server</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Interface</label>
+                  <select id="interface">
+                    <option>Ethernet0</option>
+                    <option>GigabitEthernet0/1</option>
+                    <option>GigabitEthernet0/2</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="subpanel">
+                <h3>IPv4 CONFIGURATION</h3>
+                <div class="field">
+                  <label>IP Address</label>
+                  <input id="ipAddress" value="192.168.10.10">
+                </div>
+                <div class="field">
+                  <label>Subnet Mask</label>
+                  <input id="subnetMask" value="255.255.255.0">
+                </div>
+                <div class="field">
+                  <label>Default Gateway</label>
+                  <input id="gateway" value="192.168.10.1">
+                </div>
+              </div>
+
+              <div class="subpanel">
+                <h3>NETWORK STATUS</h3>
+                <div class="summaryitem"><span class="check">●</span><span id="interfaceStatus">Interface configured</span></div>
+                <div class="summaryitem"><span class="empty">●</span><span id="gatewayStatus">Gateway unverified</span></div>
+                <div class="summaryitem"><span class="empty">●</span><span id="pingStatus">Connectivity unverified</span></div>
+                <button class="btn primary full" id="applyConfig">Apply Configuration</button>
+                <button class="btn ghost full" id="testPing">Test Connectivity</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LOWER PANELS -->
+        <div class="lowergrid">
+          <div class="card">
+            <div class="cardhead">
+              <h2>◷ Activity Log</h2>
+              <button class="tab" id="clearLog">Clear</button>
+            </div>
+            <div class="activity" id="activityLog">
+              <div class="event"><time>READY</time> <span class="good">Simulator initialized.</span></div>
+              <div class="event"><time>INFO</time> Select a device to configure its network settings.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cardhead">
+              <h2>▤ Mission Briefing</h2>
+              <span class="tag">CLASSIFIED</span>
+            </div>
+            <div class="hintbox">
+              <ol id="briefing">
+                <li>Segmentasikan perangkat menggunakan VLAN 10 dan VLAN 20.</li>
+                <li>Pastikan port switch berada pada VLAN yang benar.</li>
+                <li>Aktifkan trunk dan konfigurasi routing antarsubnet.</li>
+                <li>Verifikasi konektivitas menggunakan ping.</li>
+              </ol>
+              <button class="btn ghost full" id="hintBtn">Reveal Hint</button>
+              <div id="hintText" style="display:none;margin-top:8px;color:#ffd166">
+                Periksa subnet mask, gateway, VLAN port, dan trunk sebelum menyimpulkan jaringan rusak.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- KOLOM KANAN -->
+      <aside class="right">
+
+        <!-- TASKS -->
+        <div class="card">
+          <div class="cardhead">
+            <h2>🎯 Mission Objectives</h2>
+            <span class="tag" id="taskCount">0 / 5</span>
+          </div>
+          <div class="missionsteps" id="missionSteps">
+            <div class="task active">
+              <div class="num">1</div>
+              <div><b>Configure VLANs</b><small>Buat VLAN 10 dan VLAN 20 pada switch.</small></div>
+            </div>
+            <div class="task">
+              <div class="num">2</div>
+              <div><b>Assign Access Ports</b><small>Tempatkan setiap PC ke VLAN yang sesuai.</small></div>
+            </div>
+            <div class="task">
+              <div class="num">3</div>
+              <div><b>Configure Trunk</b><small>Izinkan VLAN yang diperlukan melalui trunk.</small></div>
+            </div>
+            <div class="task">
+              <div class="num">4</div>
+              <div><b>Configure Routing</b><small>Siapkan gateway untuk tiap subnet.</small></div>
+            </div>
+            <div class="task">
+              <div class="num">5</div>
+              <div><b>Verify Connectivity</b><small>Uji koneksi dan identifikasi masalah.</small></div>
+            </div>
+          </div>
+          <button class="btn primary full" id="validateBtn">Validate Mission</button>
+        </div>
+
+        <!-- TERMINAL -->
+        <div class="card" id="terminalCard">
+          <div class="cardhead">
+            <h2>▣ Command Terminal</h2>
+            <select class="consoleSelect" id="terminalDevice">
+              <option value="PC1">PC-ADMIN</option>
+              <option value="PC2">PC-ADMIN2</option>
+              <option value="PC3">PC-FINANCE</option>
+              <option value="PC4">PC-FINANCE2</option>
+              <option value="SW1">SW-CORE</option>
+              <option value="R1">R-EDGE</option>
+              <option value="SRV1">DHCP-SRV</option>
+              <option value="SRV2">DNS-SRV</option>
+            </select>
+          </div>
+
+          <div class="terminal" id="terminalOutput">
+            <div class="info">NETFORGE OS v2.6.1</div>
+            <div class="muted">Educational network simulator</div>
+            <div class="ok">System ready.</div>
+            <div class="muted">Ketik help untuk melihat perintah.</div>
+            <div>&nbsp;</div>
+          </div>
+
+          <div class="cmdrow">
+            <input id="commandInput" placeholder="Masukkan perintah..." autocomplete="off">
+            <button class="btn primary" id="runCommand">RUN ↵</button>
+          </div>
+
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:8px">
+            <button class="tab quickcmd" data-command="help">help</button>
+            <button class="tab quickcmd" data-command="ipconfig">ipconfig</button>
+            <button class="tab quickcmd" data-command="ping 192.168.20.10">ping</button>
+            <button class="tab quickcmd" data-command="show vlan brief">show vlan</button>
+            <button class="tab quickcmd" data-command="show ip route">show route</button>
+          </div>
+        </div>
+
+        <!-- REWARDS -->
+        <div class="card">
+          <div class="cardhead">
+            <h2>🏆 Mission Rewards</h2>
+            <span class="tag">XP SYSTEM</span>
+          </div>
+
+          <div class="summarylist">
+            <div class="summaryitem"><span class="check">✓</span> Konfigurasi yang benar: +100 XP</div>
+            <div class="summaryitem"><span class="check">✓</span> Diagnosis yang tepat: +50 XP</div>
+            <div class="summaryitem"><span class="check">✓</span> Misi selesai: +250 XP</div>
+          </div>
+
+          <div class="reward">
+            <div class="gem">◇</div>
+            <div>
+              <strong>Network Architect</strong>
+              <small id="rewardText">Selesaikan seluruh tantangan</small>
+            </div>
+          </div>
+
+          <button class="btn warn full" id="resetMission">Restart Challenge</button>
+        </div>
+
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- BAGIAN 3: JAVASCRIPT AKAN DITAMBAHKAN DI SINI -->
+<script>
+/* ==========================================
+   NETFORGE NETWORK SIMULATION LAB
+   Educational network simulator
+========================================== */
+
+const $ = id => document.getElementById(id);
+
+const defaultDevices = {
+  PC1:  { name:"PC-ADMIN",    type:"PC",      ip:"192.168.10.10", mask:"255.255.255.0", gw:"192.168.10.1",  vlan:10 },
+  PC2:  { name:"PC-ADMIN2",   type:"PC",      ip:"192.168.10.11", mask:"255.255.255.0", gw:"192.168.10.1",  vlan:10 },
+  PC3:  { name:"PC-FINANCE",  type:"PC",      ip:"192.168.20.10", mask:"255.255.255.0", gw:"192.168.20.1",  vlan:20 },
+  PC4:  { name:"PC-FINANCE2", type:"PC",      ip:"192.168.20.11", mask:"255.255.255.0", gw:"192.168.20.1",  vlan:20 },
+  SW1:  { name:"SW-CORE",     type:"Switch",  ip:"", mask:"", gw:"", vlan:1 },
+  R1:   { name:"R-EDGE",      type:"Router",  ip:"", mask:"", gw:"", vlan:1 },
+  SRV1: { name:"DHCP-SRV",    type:"Server",  ip:"192.168.30.10", mask:"255.255.255.0", gw:"192.168.30.1", vlan:30 },
+  SRV2: { name:"DNS-SRV",     type:"Server",  ip:"192.168.30.20", mask:"255.255.255.0", gw:"192.168.30.1", vlan:30 }
+};
+
+const defaultPorts = {
+  PC1:10, PC2:10, PC3:20, PC4:20, SRV1:30, SRV2:30
+};
+
+let devices = {};
+let ports = {};
+let vlans = [];
+let trunk = false;
+let routing = false;
+let selected = "PC1";
+let configTab = "ip";
+let viewMode = "network";
+let activeLab = 0;
+let xp = 0;
+let earned = new Set();
+let completedTasks = new Set();
+let pingSuccess = false;
+let currentCommandHistory = [];
+let historyIndex = 0;
+
+const tasks = [
+  "Buat VLAN 10 dan VLAN 20 pada switch.",
+  "Pastikan PC berada pada VLAN yang sesuai.",
+  "Aktifkan trunk pada switch.",
+  "Konfigurasikan routing antarsubnet.",
+  "Buktikan konektivitas menggunakan ping."
+];
+
+function clone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function init() {
+  devices = clone(defaultDevices);
+  ports = clone(defaultPorts);
+  vlans = [{id:1,name:"default"},{id:10,name:"ADMIN"},{id:20,name:"FINANCE"}];
+  trunk = false;
+  routing = false;
+  xp = 0;
+  earned = new Set();
+  completedTasks = new Set();
+  pingSuccess = false;
+
+  renderTasks();
+  updateProgress();
+  loadDevice(selected);
+  renderTopology();
+  logEvent("INFO", "NetForge siap digunakan.");
+  terminalPrint("System initialized.", "ok");
+  terminalPrint("Ketik help untuk melihat perintah.", "muted");
+}
+
+/* ---------- NOTIFICATIONS & LOGS ---------- */
+
+function toast(message) {
+  const el = $("toast");
+  el.textContent = message;
+  el.style.display = "block";
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => el.style.display = "none", 3200);
+}
+
+function logEvent(type, message) {
+  const log = $("activityLog");
+  if (!log) return;
+
+  const item = document.createElement("div");
+  item.className = "event";
+
+  const time = document.createElement("time");
+  time.textContent = new Date().toLocaleTimeString("id-ID", {
+    hour:"2-digit", minute:"2-digit", second:"2-digit"
+  });
+
+  const msg = document.createElement("span");
+  msg.textContent = message;
+  if (type === "SUCCESS") msg.className = "good";
+  if (type === "ERROR") msg.className = "bad";
+
+  item.append(time, msg);
+  log.prepend(item);
+}
+
+function terminalPrint(message, type = "") {
+  const output = $("terminalOutput");
+  const line = document.createElement("div");
+  if (type) line.className = type;
+  line.textContent = message;
+  output.appendChild(line);
+  output.scrollTop = output.scrollHeight;
+}
+
+function reward(key, amount, message) {
+  if (earned.has(key)) return;
+  earned.add(key);
+  xp += amount;
+  updateProgress();
+  logEvent("SUCCESS", message + " (+" + amount + " XP)");
+  toast(message + " · +" + amount + " XP");
+}
+
+/* ---------- DEVICE SELECTION ---------- */
+
+function loadDevice(id) {
+  if (!devices[id]) return;
+  selected = id;
+
+  document.querySelectorAll(".device").forEach(el => {
+    el.classList.toggle("selected", el.dataset.device === id);
+  });
+
+  $("selectedDevice").textContent = id + " SELECTED";
+  $("terminalDevice").value = id;
+  $("deviceName").value = devices[id].name;
+  $("deviceType").value = devices[id].type;
+  $("ipAddress").value = devices[id].ip;
+  $("subnetMask").value = devices[id].mask;
+  $("gateway").value = devices[id].gw;
+
+  $("interface").value =
+    id === "SW1" ? "GigabitEthernet0/1" :
+    id === "R1" ? "GigabitEthernet0/1" : "Ethernet0";
+
+  $("interfaceStatus").textContent = "Interface: " + devices[id].type;
+  $("gatewayStatus").textContent = "Gateway: " + (devices[id].gw || "Belum diatur");
+  $("pingStatus").textContent = "Connectivity belum diuji";
+
+  renderConfig();
+}
+
+document.querySelectorAll(".device").forEach(el => {
+  el.addEventListener("click", () => {
+    loadDevice(el.dataset.device);
+    logEvent("INFO", "Perangkat dipilih: " + devices[el.dataset.device].name);
+  });
+});
+
+/* ---------- TOPOLOGY VIEW ---------- */
+
+function renderTopology() {
+  const svg = $("topologySvg");
+
+  if (viewMode === "network") {
+    svg.querySelectorAll(".group,.device,#networkLinks").forEach(el => {
+      el.style.display = "";
+    });
+
+    document.querySelectorAll(".device").forEach(el => {
+      const d = devices[el.dataset.device];
+      const texts = el.querySelectorAll("text");
+      if (texts.length >= 3 && d) {
+        texts[1].textContent = d.name;
+        texts[2].textContent = d.ip || d.type.toUpperCase();
+      }
+    });
+    return;
+  }
+
+  if (viewMode === "ip") {
+    svg.innerHTML = `
+      <rect width="720" height="345" fill="#03162e"/>
+      <text x="25" y="30" fill="#00d8ff" font-size="15">IP ADDRESS TABLE</text>
+      <text x="25" y="55" fill="#8cb9df" font-size="10">DEVICE</text>
+      <text x="230" y="55" fill="#8cb9df" font-size="10">IP ADDRESS</text>
+      <text x="420" y="55" fill="#8cb9df" font-size="10">GATEWAY</text>
+      <text x="590" y="55" fill="#8cb9df" font-size="10">VLAN</text>
+      ${Object.entries(devices).map(([id,d],i) => `
+        <rect x="15" y="${68+i*32}" width="690" height="27"
+          rx="4" fill="${i%2 ? "#062344" : "#041b35"}"/>
+        <text x="25" y="${86+i*32}" fill="#e4f4ff" font-size="11">${d.name}</text>
+        <text x="230" y="${86+i*32}" fill="#00d8ff" font-size="11">${d.ip || "-"}</text>
+        <text x="420" y="${86+i*32}" fill="#b9d7f4" font-size="11">${d.gw || "-"}</text>
+        <text x="600" y="${86+i*32}" fill="#00e4a5" font-size="11">${d.vlan || "-"}</text>
+      `).join("")}
+    `;
+    return;
+  }
+
+  svg.innerHTML = `
+    <rect width="720" height="345" fill="#03162e"/>
+    <text x="25" y="30" fill="#00d8ff" font-size="15">ROUTING TABLE</text>
+    <text x="25" y="57" fill="#8cb9df" font-size="11">DESTINATION</text>
+    <text x="260" y="57" fill="#8cb9df" font-size="11">NEXT HOP</text>
+    <text x="480" y="57" fill="#8cb9df" font-size="11">STATUS</text>
+    ${[
+      ["192.168.10.0/24","VLAN 10",routing?"CONNECTED":"NOT CONFIGURED"],
+      ["192.168.20.0/24","VLAN 20",routing?"CONNECTED":"NOT CONFIGURED"],
+      ["192.168.30.0/24","VLAN 30",routing?"CONNECTED":"NOT CONFIGURED"],
+      ["0.0.0.0/0","UPSTREAM",routing?"NO DEFAULT ROUTE":"NOT CONFIGURED"]
+    ].map((r,i)=>`
+      <rect x="15" y="${70+i*46}" width="690" height="38" rx="5" fill="#052344"/>
+      <text x="25" y="${93+i*46}" fill="#e4f4ff" font-size="11">${r[0]}</text>
+      <text x="260" y="${93+i*46}" fill="#00d8ff" font-size="11">${r[1]}</text>
+      <text x="480" y="${93+i*46}" fill="${r[2]==="CONNECTED"?"#00e4a5":"#ff9d42"}" font-size="11">${r[2]}</text>
+    `).join("")}
+    <text x="25" y="285" fill="#9bc5e8" font-size="11">
+      ${routing ? "Routing simulasi aktif untuk subnet internal." : "Routing belum aktif. Konfigurasikan routing terlebih dahulu."}
+    </text>
+  `;
+}
+
+document.querySelectorAll("[data-view]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    viewMode = btn.dataset.view;
+    document.querySelectorAll("[data-view]").forEach(b =>
+      b.classList.toggle("active", b === btn)
+    );
+    renderTopology();
+  });
+});
+
+/* ---------- DEVICE CONFIGURATION TABS ---------- */
+
+document.querySelectorAll("[data-config]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    configTab = btn.dataset.config;
+    document.querySelectorAll("[data-config]").forEach(b =>
+      b.classList.toggle("active", b === btn)
+    );
+    renderConfig();
+  });
+});
+
+function renderConfig() {
+  const host = $("configContent");
+
+  if (configTab === "ip") {
+    host.innerHTML = `
+      <div class="configgrid">
+        <div class="subpanel">
+          <h3>DEVICE INFO</h3>
+          <div class="field"><label>Device name</label>
+            <input id="deviceName" value="${escapeAttr(devices[selected].name)}"></div>
+          <div class="field"><label>Device type</label>
+            <input value="${escapeAttr(devices[selected].type)}" disabled></div>
+          <div class="field"><label>Interface</label>
+            <input id="interface" value="${selected==="SW1"||selected==="R1"?"GigabitEthernet0/1":"Ethernet0"}"></div>
+        </div>
+        <div class="subpanel">
+          <h3>IPv4 CONFIGURATION</h3>
+          <div class="field"><label>IP Address</label>
+            <input id="ipAddress" value="${escapeAttr(devices[selected].ip)}" placeholder="192.168.10.10"></div>
+          <div class="field"><label>Subnet Mask</label>
+            <input id="subnetMask" value="${escapeAttr(devices[selected].mask)}" placeholder="255.255.255.0"></div>
+          <div class="field"><label>Default Gateway</label>
+            <input id="gateway" value="${escapeAttr(devices[selected].gw)}" placeholder="192.168.10.1"></div>
+        </div>
+        <div class="subpanel">
+          <h3>NETWORK STATUS</h3>
+          <div class="summaryitem"><span class="check">●</span>Interface selected</div>
+          <div class="summaryitem"><span class="empty">●</span>Gateway requires verification</div>
+          <div class="summaryitem"><span class="empty">●</span>Connectivity requires testing</div>
+          <button class="btn primary full" id="applyConfig">Apply Configuration</button>
+          <button class="btn ghost full" id="testPing">Test Connectivity</button>
+        </div>
+      </div>`;
+    $("applyConfig").addEventListener("click", applyConfig);
+    $("testPing").addEventListener("click", () => runPing("192.168.20.10"));
+    return;
+  }
+
+  if (configTab === "vlan") {
+    host.innerHTML = `
+      <div class="configgrid">
+        <div class="subpanel">
+          <h3>CREATE VLAN</h3>
+          <div class="field"><label>VLAN ID</label>
+            <input id="newVlanId" type="number" min="2" max="4094" value="30"></div>
+          <div class="field"><label>VLAN Name</label>
+            <input id="newVlanName" value="SERVERS"></div>
+          <button class="btn primary full" id="createVlan">Create VLAN</button>
+          <button class="btn ghost full" id="checkVlans">Show VLANs</button>
+        </div>
+        <div class="subpanel">
+          <h3>ACCESS PORT</h3>
+          <div class="field"><label>Device</label>
+            <select id="portDevice">
+              ${Object.keys(defaultPorts).map(id=>`<option value="${id}">${id} - ${devices[id].name}</option>`).join("")}
+            </select></div>
+          <div class="field"><label>Assign VLAN</label>
+            <select id="portVlan">
+              ${vlans.map(v=>`<option value="${v.id}">VLAN ${v.id} - ${v.name}</option>`).join("")}
+            </select></div>
+          <button class="btn primary full" id="assignPort">Apply Access VLAN</button>
+        </div>
+        <div class="subpanel">
+          <h3>TRUNK CONFIGURATION</h3>
+          <div class="summaryitem"><span class="${trunk?"check":"empty"}">●</span>
+            ${trunk?"Trunk enabled":"Trunk disabled"}</div>
+          <div class="field"><label>Allowed VLANs</label>
+            <input id="allowedVlans" value="10,20,30"></div>
+          <button class="btn primary full" id="enableTrunk">${trunk?"Reconfigure Trunk":"Enable Trunk"}</button>
+        </div>
+      </div>
+      <div class="subpanel" style="margin-top:10px">
+        <h3>CURRENT VLAN DATABASE</h3>
+        <div id="vlanDatabase"></div>
+      </div>`;
+
+    renderVlanDatabase();
+
+    $("createVlan").addEventListener("click", createVlan);
+    $("checkVlans").addEventListener("click", () => {
+      renderVlanDatabase();
+      terminalPrint("VLAN database ditampilkan.", "info");
+    });
+    $("assignPort").addEventListener("click", assignPort);
+    $("enableTrunk").addEventListener("click", enableTrunk);
+    return;
+  }
+
+  host.innerHTML = `
+    <div class="configgrid">
+      <div class="subpanel">
+        <h3>ROUTING CONFIGURATION</h3>
+        <p style="color:#9bc5e8;line-height:1.7">Aktifkan routing untuk mengizinkan komunikasi antar-subnet pada simulasi ini.</p>
+        <button class="btn primary full" id="enableRouting">${routing?"Routing Enabled":"Enable Routing"}</button>
+      </div>
+      <div class="subpanel">
+        <h3>GATEWAY CHECK</h3>
+        <div class="summaryitem"><span class="${routing?"check":"empty"}">●</span>
+          ${routing?"Routing aktif":"Routing belum aktif"}</div>
+        <div class="summaryitem"><span class="${trunk?"check":"empty"}">●</span>
+          ${trunk?"Trunk aktif":"Trunk belum aktif"}</div>
+        <button class="btn ghost full" id="showRoutes">Show Routing Table</button>
+      </div>
+      <div class="subpanel">
+        <h3>SIMULATION STATUS</h3>
+        <p style="color:#9bc5e8;line-height:1.7">Routing hanya berlaku pada logika simulasi browser. Tidak mengubah router sungguhan.</p>
+      </div>
+    </div>`;
+
+  $("enableRouting").addEventListener("click", enableRouting);
+  $("showRoutes").addEventListener("click", () => {
+    viewMode = "routes";
+    renderTopology();
+    document.querySelectorAll("[data-view]").forEach(b =>
+      b.classList.toggle("active", b.dataset.view === "routes")
+    );
+    terminalPrint("Routing table dibuka.", "info");
+  });
+}
+
+function escapeAttr(value) {
+  return String(value).replace(/&/g,"&amp;").replace(/"/g,"&quot;")
+    .replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+/* ---------- IP CONFIGURATION ---------- */
+
+function validIPv4(ip) {
+  const parts = ip.split(".");
+  return parts.length === 4 && parts.every(p =>
+    /^\d{1,3}$/.test(p) && Number(p) >= 0 && Number(p) <= 255
+  );
+}
+
+function applyConfig() {
+  const name = $("deviceName").value.trim();
+  const ip = $("ipAddress").value.trim();
+  const mask = $("subnetMask").value.trim();
+  const gw = $("gateway").value.trim();
+
+  if (!name) {
+    toast("Nama perangkat tidak boleh kosong.");
+    return;
+  }
+
+  if (devices[selected].type !== "Switch" && devices[selected].type !== "Router") {
+    if (!validIPv4(ip) || !validIPv4(mask) || !validIPv4(gw)) {
+      toast("Format IP, subnet mask, atau gateway tidak valid.");
+      logEvent("ERROR", "Konfigurasi IPv4 ditolak: format tidak valid.");
+      return;
+    }
+  }
+
+  devices[selected].name = name;
+  devices[selected].ip = ip;
+  devices[selected].mask = mask;
+  devices[selected].gw = gw;
+
+  reward("config-" + selected, 25, "Konfigurasi " + name + " diterapkan");
+  logEvent("INFO", "IP settings diperbarui untuk " + name);
+  renderTopology();
+  toast("Konfigurasi perangkat berhasil diterapkan.");
+}
+
+/* ---------- VLAN ---------- */
+
+function renderVlanDatabase() {
+  const host = $("vlanDatabase");
+  if (!host) return;
+
+  host.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-size:10px">
+      <thead><tr style="color:#8cb9df;text-align:left">
+        <th style="padding:7px">ID</th>
+        <th>NAME</th><th>STATUS</th>
+      </tr></thead>
+      <tbody>
+        ${vlans.map(v=>`
+          <tr style="border-top:1px solid #0b3153">
+            <td style="padding:7px;color:#00d8ff">${v.id}</td>
+            <td>${escapeAttr(v.name)}</td>
+            <td style="color:#00e4a5">ACTIVE</td>
+          </tr>`).join("")}
+      </tbody>
+    </table>`;
+}
+
+function createVlan() {
+  const id = Number($("newVlanId").value);
+  const name = $("newVlanName").value.trim().toUpperCase();
+
+  if (!Number.isInteger(id) || id < 2 || id > 4094 || !name) {
+    toast("VLAN ID harus 2–4094 dan nama wajib diisi.");
+    return;
+  }
+
+  if (vlans.some(v => v.id === id)) {
+    toast("VLAN " + id + " sudah ada.");
+    return;
+  }
+
+  vlans.push({id, name});
+  vlans.sort((a,b)=>a.id-b.id);
+  renderConfig();
+  logEvent("SUCCESS", "VLAN " + id + " (" + name + ") dibuat.");
+  reward("vlan-" + id, 20, "VLAN baru dibuat");
+  checkTaskProgress();
+}
+
+function assignPort() {
+  const id = $("portDevice").value;
+  const vlan = Number($("portVlan").value);
+
+  if (!vlans.some(v=>v.id===vlan)) {
+    toast("VLAN belum tersedia.");
+    return;
+  }
+
+  ports[id] = vlan;
+  devices[id].vlan = vlan;
+
+  logEvent("INFO", id + " ditetapkan ke VLAN " + vlan);
+  toast(id + " sekarang berada pada VLAN " + vlan);
+  renderTopology();
+  checkTaskProgress();
+}
+
+function enableTrunk() {
+  const raw = $("allowedVlans").value;
+  const allowed = raw.split(",").map(s=>Number(s.trim()));
+
+  if (!raw.trim() || allowed.some(v=>!Number.isInteger(v) || !vlans.some(x=>x.id===v))) {
+    toast("Daftar allowed VLAN tidak valid. Buat VLAN terlebih dahulu.");
+    return;
+  }
+
+  trunk = true;
+  renderConfig();
+  logEvent("SUCCESS", "Trunk diaktifkan. Allowed VLAN: " + allowed.join(", "));
+  reward("trunk", 50, "Trunk berhasil dikonfigurasi");
+  checkTaskProgress();
+}
+
+function enableRouting() {
+  routing = true;
+  renderConfig();
+  renderTopology();
+  logEvent("SUCCESS", "Routing antarsubnet diaktifkan pada simulasi.");
+  reward("routing", 75, "Routing berhasil diaktifkan");
+  checkTaskProgress();
+}
+
+/* ---------- CONNECTIVITY SIMULATION ---------- */
+
+function sameSubnet(ip1, ip2, mask) {
+  if (!validIPv4(ip1) || !validIPv4(ip2) || !validIPv4(mask)) return false;
+
+  const a = ip1.split(".").map(Number);
+  const b = ip2.split(".").map(Number);
+  const m = mask.split(".").map(Number);
+
+  return a.every((v,i)=>(v&m[i])===(b[i]&m[i]));
+}
+
+function findDeviceByIP(ip) {
+  return Object.entries(devices).find(([id,d])=>d.ip===ip);
+}
+
+function canCommunicate(sourceId, targetId) {
+  const source = devices[sourceId];
+  const target = devices[targetId];
+
+  if (!source || !target) return {ok:false,reason:"Perangkat tujuan tidak ditemukan."};
+  if (!source.ip || !target.ip) return {ok:false,reason:"Salah satu perangkat belum memiliki IP."};
+  if (sourceId === targetId) return {ok:true,reason:"Loopback lokal."};
+
+  const sameNetwork = sameSubnet(source.ip,target.ip,source.mask);
+
+  if (sameNetwork) {
+    if (source.vlan !== target.vlan) {
+      return {ok:false,reason:"VLAN berbeda. Periksa access port switch."};
+    }
+
+    if (source.vlan !== undefined && !vlans.some(v=>v.id===source.vlan)) {
+      return {ok:false,reason:"VLAN sumber belum dibuat."};
+    }
+
+    return {ok:true,reason:"Satu subnet dan VLAN sesuai."};
+  }
+
+  if (!routing) {
+    return {ok:false,reason:"Tidak ada routing antar-subnet."};
+  }
+
+  if (!trunk && source.vlan !== target.vlan) {
+    return {ok:false,reason:"Trunk belum aktif."};
+  }
+
+  if (!source.gw || !target.gw) {
+    return {ok:false,reason:"Default gateway belum dikonfigurasi."};
+  }
+
+  if (!validIPv4(source.gw) || !validIPv4(target.gw)) {
+    return {ok:false,reason:"Format gateway tidak valid."};
+  }
+
+  return {ok:true,reason:"Routing simulasi berhasil."};
+}
+
+function runPing(targetIP) {
+  const sourceId = selected;
+  const source = devices[sourceId];
+  const found = findDeviceByIP(targetIP);
+
+  terminalPrint(source.name + " > ping " + targetIP, "info");
+
+  if (!found) {
+    terminalPrint("Destination host unreachable.", "err");
+    terminalPrint("Periksa alamat IP tujuan.", "warn");
+    $("pingStatus").textContent = "Host tidak ditemukan";
+    logEvent("ERROR", "Ping gagal: tujuan tidak ditemukan.");
+    return false;
+  }
+
+  const [targetId, target] = found;
+  const result = canCommunicate(sourceId,targetId);
+
+  if (!result.ok) {
+    terminalPrint("Request timed out.", "err");
+    terminalPrint("Diagnosis: " + result.reason, "warn");
+    $("pingStatus").textContent = "Koneksi gagal";
+    logEvent("ERROR", "Ping gagal: " + result.reason);
+    return false;
+  }
+
+  for (let i=1;i<=4;i++) {
+    terminalPrint("Reply from " + targetIP + ": bytes=32 time=" +
+      (2+i) + "ms TTL=64", "ok");
+  }
+
+  terminalPrint("Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)", "ok");
+  terminalPrint("Diagnosis: " + result.reason, "info");
+  $("pingStatus").textContent = "Koneksi berhasil";
+  pingSuccess = true;
+
+  reward("ping-" + sourceId + "-" + targetId, 30, "Ping berhasil");
+  logEvent("SUCCESS", "Ping berhasil dari " + source.name + " ke " + target.name);
+  checkTaskProgress();
+
+  return true;
+}
+
+/* ---------- TERMINAL COMMANDS ---------- */
+
+function runCommand() {
+  const input = $("commandInput");
+  const cmd = input.value.trim();
+  if (!cmd) return;
+
+  currentCommandHistory.push(cmd);
+  historyIndex = currentCommandHistory.length;
+
+  terminalPrint("$ " + cmd, "info");
+  input.value = "";
+
+  const args = cmd.split(/\s+/);
+  const lower = cmd.toLowerCase();
+  const current = devices[$("terminalDevice").value];
+
+  if (lower === "help") {
+    [
+      "help                     - daftar perintah",
+      "ipconfig                 - tampilkan konfigurasi IP",
+      "ping <IP>                - uji konektivitas",
+      "show vlan brief          - daftar VLAN",
+      "show interfaces trunk    - status trunk",
+      "show ip route            - tabel routing",
+      "show running-config      - ringkasan konfigurasi",
+      "diagnose                 - diagnosis perangkat terpilih",
+      "clear                    - bersihkan terminal"
+    ].forEach(line=>terminalPrint(line,"muted"));
+    return;
+  }
+
+  if (lower === "clear") {
+    $("terminalOutput").innerHTML = "";
+    return;
+  }
+
+  if (lower === "ipconfig") {
+    terminalPrint("Device: " + current.name);
+    terminalPrint("IPv4 Address: " + (current.ip || "Not configured"));
+    terminalPrint("Subnet Mask: " + (current.mask || "Not configured"));
+    terminalPrint("Default Gateway: " + (current.gw || "Not configured"));
+    terminalPrint("VLAN: " + (current.vlan || "N/A"));
+    return;
+  }
+
+  if (lower.startsWith("ping ")) {
+    const targetIP = args[1];
+    if (!targetIP || !validIPv4(targetIP)) {
+      terminalPrint("Usage: ping <IPv4 address>", "err");
+      return;
+    }
+    selected = $("terminalDevice").value;
+    runPing(targetIP);
+    return;
+  }
+
+  if (lower === "show vlan brief") {
+    vlans.forEach(v => {
+      const members = Object.keys(ports).filter(id=>ports[id]===v.id);
+      terminalPrint(v.id + "  " + v.name + "  active  " +
+        (members.length ? members.join(", ") : "-"), "ok");
+    });
+    return;
+  }
+
+  if (lower === "show interfaces trunk") {
+    terminalPrint("Port                 Mode      Status", "muted");
+    terminalPrint("GigabitEthernet0/1   " + (trunk?"trunk":"access") +
+      "     " + (trunk?"trunking":"not-trunking"), trunk?"ok":"warn");
+    terminalPrint("Allowed VLANs: " + (trunk?"10,20,30":"none"), "info");
+    return;
+  }
+
+  if (lower === "show ip route") {
+    if (!routing) {
+      terminalPrint("% Routing is not configured.", "err");
+      return;
+    }
+    terminalPrint("C 192.168.10.0/24  connected", "ok");
+    terminalPrint("C 192.168.20.0/24  connected", "ok");
+    terminalPrint("C 192.168.30.0/24  connected", "ok");
+    terminalPrint("No default route configured.", "warn");
+    return;
+  }
+
+  if (lower === "show running-config") {
+    terminalPrint("hostname " + current.name, "info");
+    terminalPrint("ip address " + (current.ip || "unset"));
+    terminalPrint("subnet mask " + (current.mask || "unset"));
+    terminalPrint("default gateway " + (current.gw || "unset"));
+    terminalPrint("switchport access vlan " + (current.vlan || "1"));
+    terminalPrint("trunk " + (trunk?"enabled":"disabled"));
+    terminalPrint("routing " + (routing?"enabled":"disabled"));
+    return;
+  }
+
+  if (lower === "diagnose") {
+    diagnose();
+    return;
+  }
+
+  terminalPrint("% Unknown command: " + cmd, "err");
+  terminalPrint("Ketik help untuk daftar perintah.", "muted");
+}
+
+function diagnose() {
+  const d = devices[selected];
+  terminalPrint("Running diagnostics for " + d.name + "...", "info");
+
+  if (!d.ip) {
+    terminalPrint("ERROR: IP address belum dikonfigurasi.", "err");
+    return;
+  }
+
+  if (!validIPv4(d.ip) || !validIPv4(d.mask)) {
+    terminalPrint("ERROR: IP address atau subnet mask tidak valid.", "err");
+    return;
+  }
+
+  const networkVlan = vlans.some(v=>v.id===d.vlan);
+  if (!networkVlan) {
+    terminalPrint("ERROR: VLAN " + d.vlan + " belum dibuat.", "err");
+  } else {
+    terminalPrint("OK: VLAN " + d.vlan + " ditemukan.", "ok");
+  }
+
+  if (d.gw && !validIPv4(d.gw)) {
+    terminalPrint("ERROR: Format gateway tidak valid.", "err");
+  } else if (d.gw) {
+    terminalPrint("INFO: Gateway terisi, tetapi belum tentu dapat dijangkau.", "warn");
+  } else {
+    terminalPrint("WARNING: Default gateway belum diisi.", "warn");
+  }
+
+  terminalPrint("Trunk: " + (trunk?"enabled":"disabled"), trunk?"ok":"warn");
+  terminalPrint("Routing: " + (routing?"enabled":"disabled"), routing?"ok":"warn");
+
+  reward("diagnose-" + selected, 10, "Diagnosis dijalankan");
+}
+
+$("runCommand").addEventListener("click", runCommand);
+$("commandInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") runCommand();
+
+  if (e.key === "ArrowUp") {
+    e.preventDefault();
+    if (historyIndex > 0) {
+      historyIndex--;
+      e.target.value = currentCommandHistory[historyIndex] || "";
+    }
+  }
+
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    if (historyIndex < currentCommandHistory.length - 1) {
+      historyIndex++;
+      e.target.value = currentCommandHistory[historyIndex] || "";
+    } else {
+      historyIndex = currentCommandHistory.length;
+      e.target.value = "";
+    }
+  }
+});
+
+document.querySelectorAll(".quickcmd").forEach(btn => {
+  btn.addEventListener("click", () => {
+    $("commandInput").value = btn.dataset.command;
+    runCommand();
+  });
+});
+
+/* ---------- MISSION VALIDATION ---------- */
+
+function checkTaskProgress() {
+  const vlanReady = vlans.some(v=>v.id===10) && vlans.some(v=>v.id===20);
+  const portsReady = ports.PC1===10 && ports.PC2===10 &&
+    ports.PC3===20 && ports.PC4===20;
+  const trunkReady = trunk;
+  const routingReady = routing;
+  const connectivityReady = pingSuccess;
+
+  const checks = [
+    vlanReady,
+    portsReady,
+    trunkReady,
+    routingReady,
+    connectivityReady
+  ];
+
+  checks.forEach((ok,i) => {
+    if (ok && !completedTasks.has(i)) {
+      completedTasks.add(i);
+      reward("task-" + i, 50, "Misi " + (i+1) + " selesai");
+    }
+  });
+
+  renderTasks();
+  updateProgress();
+}
+
+function renderTasks() {
+  const host = $("missionSteps");
+  if (!host) return;
+
+  host.innerHTML = tasks.map((task,i) => `
+    <div class="task ${completedTasks.has(i)?"done":""} ${!completedTasks.has(i)&&i===completedTasks.size?"active":""}">
+      <div class="num">${completedTasks.has(i)?"✓":i+1}</div>
+      <div><b>${[
+        "Configure VLANs",
+        "Assign Access Ports",
+        "Configure Trunk",
+        "Configure Routing",
+        "Verify Connectivity"
+      ][i]}</b><small>${task}</small></div>
+    </div>
+  `).join("");
+
+  $("taskCount").textContent = completedTasks.size + " / " + tasks.length;
+  $("missionCount").textContent = completedTasks.size + " / " + tasks.length + " tugas";
+}
+
+function updateProgress() {
+  const pct = Math.round(completedTasks.size / tasks.length * 100);
+  $("ring").textContent = pct + "%";
+  $("xpfill").style.width = Math.min(100,xp/5) + "%";
+  $("level").textContent = String(Math.floor(xp/200)+1).padStart(2,"0");
+  $("rewardText").textContent = xp + " XP earned";
+
+  if (completedTasks.size === tasks.length) {
+    $("rewardText").textContent = "Semua misi berhasil diselesaikan!";
+  }
+}
+
+$("validateBtn").addEventListener("click", () => {
+  checkTaskProgress();
+
+  if (completedTasks.size === tasks.length) {
+    reward("all-missions",250,"SELURUH MISI SELESAI!");
+    toast("🏆 Hebat! Kamu menyelesaikan semua tantangan.");
+  } else {
+    const remaining = tasks.length - completedTasks.size;
+    toast(remaining + " tugas belum terpenuhi. Periksa konfigurasi dan konektivitas.");
+    terminalPrint("Mission validation: " + completedTasks.size + "/" + tasks.length, "warn");
+    terminalPrint("Gunakan diagnose dan show vlan brief untuk memeriksa jaringan.", "muted");
+  }
+});
+
+/* ---------- LAB NAVIGATION ---------- */
+
+const labData = [
+  {
+    title:"VLAN Segmentation Challenge",
+    description:"Bangun jaringan tersegmentasi dan pastikan komunikasi antardivisi sesuai kebijakan.",
+    difficulty:"HARD",
+    hint:"Periksa VLAN port, trunk, subnet mask, dan routing."
+  },
+  {
+    title:"Inter-VLAN Routing Challenge",
+    description:"Aktifkan routing simulasi dan uji komunikasi antarsubnet.",
+    difficulty:"EXPERT",
+    hint:"Pastikan perangkat memiliki gateway yang benar dan routing sudah aktif."
+  },
+  {
+    title:"Network Troubleshooting",
+    description:"Gunakan terminal untuk menemukan konfigurasi yang menghambat konektivitas.",
+    difficulty:"EXPERT",
+    hint:"Mulai dengan ipconfig, show vlan brief, show interfaces trunk, lalu diagnose."
+  }
+];
+
+document.querySelectorAll("[data-lab]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    activeLab = Number(btn.dataset.lab);
+
+    document.querySelectorAll("[data-lab]").forEach(b =>
+      b.classList.toggle("active",b===btn)
+    );
+
+    $("labTitle").textContent = labData[activeLab].title;
+    $("labDescription").textContent = labData[activeLab].description;
+    $("difficulty").textContent = labData[activeLab].difficulty;
+    $("hintText").textContent = labData[activeLab].hint;
+
+    toast("Lab dipilih: " + labData[activeLab].title);
+    logEvent("INFO","Berpindah ke " + labData[activeLab].title);
+  });
+});
+
+/* ---------- QUICK ACTIONS ---------- */
+
+$("applyConfig").addEventListener("click", applyConfig);
+$("testPing").addEventListener("click", () => runPing("192.168.20.10"));
+
+$("hintBtn").addEventListener("click", () => {
+  const hint = $("hintText");
+  const showing = hint.style.display !== "none";
+  hint.style.display = showing ? "none" : "block";
+  $("hintBtn").textContent = showing ? "Reveal Hint" : "Hide Hint";
+});
+
+$("clearLog").addEventListener("click", () => {
+  $("activityLog").innerHTML = "";
+  logEvent("INFO","Activity log dibersihkan.");
+});
+
+$("resetBtn").addEventListener("click", resetSimulation);
+$("resetMission").addEventListener("click", resetSimulation);
+
+function resetSimulation() {
+  if (!confirm("Yakin ingin mereset konfigurasi dan progres simulasi?")) return;
+
+  $("activityLog").innerHTML = "";
+  $("terminalOutput").innerHTML = "";
+  init();
+  renderConfig();
+  renderTopology();
+
+  toast("Simulasi telah direset.");
+}
+
+$("helpBtn").addEventListener("click", () => {
+  $("commandInput").value = "help";
+  runCommand();
+  $("terminalCard").scrollIntoView({behavior:"smooth",block:"center"});
+});
+
+$("terminalBtn").addEventListener("click", () => {
+  $("terminalCard").scrollIntoView({behavior:"smooth",block:"center"});
+  $("commandInput").focus();
+});
+
+$("topologyBtn").addEventListener("click", () => {
+  $("topologyCard").scrollIntoView({behavior:"smooth",block:"center"});
+});
+
+/* ---------- START ---------- */
+
+init();
+renderConfig();
+renderTopology();
+</script>
+</body>
+</html>
